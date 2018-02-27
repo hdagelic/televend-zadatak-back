@@ -5,6 +5,9 @@ from flask_restplus import Api, Resource, fields
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin
 
+# Ovo treba jer je backend na drugom portu
+from flask_cors import CORS, cross_origin
+
 import os
 import sys
 import datetime
@@ -15,6 +18,7 @@ import psycopg2
 
 app = Flask(__name__)
 api = Api(app)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Ovo su razne konfiguracijske postavk
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://postgres:burek123@postgres-service:5432/zadatak'
