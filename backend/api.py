@@ -156,7 +156,7 @@ class OsobaRoot(Resource):
    def post(self):
       #print(str(api.payload), file=sys.stderr)
       i =  api.payload
-      nova_osoba = Osoba(username=i['username'], ime=i['ime'], prezime=i['prezime'])
+      nova_osoba = Osoba(username=i['username'], ime=i['ime'], prezime=i['prezime'], email=i['email'], role=i['role'], password=i['password'])
       db.session.add(nova_osoba)
       db.session.commit()
       return i
@@ -175,6 +175,9 @@ class OsobaId(Resource):
    # Updatea osobu
    @api.expect(model_osobe_plus_password)
    def post(self, id):
+      print("post", file=sys.stderr)
+      print(str(api.payload), file=sys.stderr)
+
       i = api.payload
       stara_osoba = Osoba.query.filter_by(id=id).first()
       OsobaCopy(stara_osoba, i)
