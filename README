@@ -1,0 +1,25 @@
+docker build -t hello-world . (. je trenutni folder s fajlom .Dockerfile)
+docker run -p 8080:80 -v /root/televend/src/:/var/www/html/ hello-world
+
+UPUTE
+-----
+
+- napraviti docker-compose.yml
+- napraviti poddir sa src fajlovima i requirements.txt (za pip)
+
+- izvesti "docker compose up" ili "docker-compose up --build"    
+- docker ps za "ps"
+- docker stop za zaustaviti sve
+
+
+POKRETANJE
+----------
+
+postgres:
+
+docker exec -it televend_postgres-service_1 psql -U postgres
+
+
+flask:
+
+docker exec -it televend_backend-service_1 /usr/src/app/runpython.sh
