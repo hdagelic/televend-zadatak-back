@@ -3,16 +3,16 @@ version: '2'
 services:
   postgres-service:
     build: ./postgres
-    #ports:
-    #  - 5432:5432
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_PASSWORD: burek123
     
 
-  backend-service:
-    build: ./backend
-    volumes:
-      - ./backend:/usr/src/app
-    ports:
-      - 8080:80 
+  #backend-service:
+  #  build: ./backend
+  #  volumes:
+  #    - ./backend:/usr/src/app
+  #  ports:
+  #    - 8080:80 
    

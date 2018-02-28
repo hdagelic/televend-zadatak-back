@@ -20,8 +20,12 @@ app = Flask(__name__)
 api = Api(app)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
+# localhost - backend van dockera, postgres - backend u dockeru
+databasehost = 'localhost'
+#databasehost = 'postgres-service' 
+
 # Ovo su razne konfiguracijske postavk
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://postgres:burek123@postgres-service:5432/zadatak'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://postgres:burek123@' + databasehost  +  ':5432/zadatak'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'nekikljuc'
 
@@ -175,8 +179,8 @@ class OsobaId(Resource):
    # Updatea osobu
    @api.expect(model_osobe_plus_password)
    def post(self, id):
-      print("post", file=sys.stderr)
-      print(str(api.payload), file=sys.stderr)
+      #print("post", file=sys.stderr)
+      #print(str(api.payload), file=sys.stderr)
 
       i = api.payload
       stara_osoba = Osoba.query.filter_by(id=id).first()
@@ -253,7 +257,7 @@ class Dbtest(Resource):
        xstr = ''
        conn = None
        cursor = None
-       conn_string = "host='postgres-service' dbname='zadatak' user='postgres' password='burek124'"
+       conn_string = "host='" + databasehost + "' dbname='zadatak' user='postgres' password='burek123'"
        try: 
           conn = psycopg2.connect(conn_string)
           cursor = conn.cursor()

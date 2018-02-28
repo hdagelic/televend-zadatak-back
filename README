@@ -15,11 +15,17 @@ UPUTE
 POKRETANJE
 ----------
 
+Napomena:
+---------
+
+Backend se moze pokrenuti s dockerom ili bez dockera. Ako se pokrece s Dockerom - odkomentirati backend-service u docker-compose.yml i u backend/api.py prebaciti varijablu "databasehost" u "postgres-service". Ako se pokrece bez dockera, treba na stroj instalirati sve python pakete iz backend/requirements.py i pokrenuti skriptu "runnodocker.py". Ovo je napravljeno jer se dogadja zastoj mreze kada se koristi docker, a api se koristi preko Chrome browsera - request traje preko 10 sekundi. Na Firefoxu se ovo ne dogadja, niti kada se ne koristi Docker za backend. Moguce da se radi o nekom problemu s exportom portova, ali oni su exportani po dokumentaciji.
+
+
 postgres:
 
 docker exec -it televend_postgres-service_1 psql -U postgres
 
 
-flask:
+flask (ako se koristi docker): 
 
 docker exec -it televend_backend-service_1 /usr/src/app/runpython.sh

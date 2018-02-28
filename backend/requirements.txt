@@ -6,3 +6,4 @@ flask-login==0.4.1
 jwt==0.5.2
 psycopg2==2.7.4
 flask-cors==3.0.3
+uwsgi==2.0.17
