@@ -141,7 +141,10 @@ def OsobaPlusCopy(det, i, id_osobe):
    det.adresa=i['adresa']
    det.telefon=i['telefon']
    det.postcode=i['postcode']
-   det.datum_rodjenja=datetime.datetime.strptime(i['datum_rodjenja'], '%Y-%m-%d')
+   try:
+     det.datum_rodjenja=datetime.datetime.strptime(i['datum_rodjenja'], '%Y-%m-%d')
+   except:
+     pass
    det.spol=i['spol']
    det.glavni_id = id_osobe
 
@@ -239,9 +242,14 @@ class Upload(Resource):
 
        det = OsobaPlus.query.filter_by(glavni_id=id).first()
        if (det is None):
-          return 'Error: detalji ne postoje, najprije ih treba napraviti' 
- 
-       infile = request.files['fileToUpload']
+          det = OsobaPlus()
+          det.glavni_id = id
+          db.session.add(det)
+          #return 'Error: detalji ne postoje, najprije ih treba napraviti' 
+
+       #print(str(request.files))
+    
+       infile = request.files['slika']
        name = infile.filename
        dest = 'static/slike/' + name
        infile.save(dest)

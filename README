@@ -1,6 +1,3 @@
-docker build -t hello-world . (. je trenutni folder s fajlom .Dockerfile)
-docker run -p 8080:80 -v /root/televend/src/:/var/www/html/ hello-world
-
 UPUTE
 -----
 
@@ -9,7 +6,7 @@ UPUTE
 
 - izvesti "docker compose up" ili "docker-compose up --build"    
 - docker ps za "ps"
-- docker stop za zaustaviti sve
+- docker stop za zaustaviti sve (docker stop $(docker ps -q))
 
 
 POKRETANJE
@@ -18,7 +15,7 @@ POKRETANJE
 Napomena:
 ---------
 
-Backend se moze pokrenuti s dockerom ili bez dockera. Ako se pokrece s Dockerom - odkomentirati backend-service u docker-compose.yml i u backend/api.py prebaciti varijablu "databasehost" u "postgres-service". Ako se pokrece bez dockera, treba na stroj instalirati sve python pakete iz backend/requirements.py i pokrenuti skriptu "runnodocker.py". Ovo je napravljeno jer se dogadja zastoj mreze kada se koristi docker, a api se koristi preko Chrome browsera - request traje preko 10 sekundi. Na Firefoxu se ovo ne dogadja, niti kada se ne koristi Docker za backend. Moguce da se radi o nekom problemu s exportom portova, ali oni su exportani po dokumentaciji.
+Backend se moze pokrenuti s dockerom ili bez dockera. Ako se pokrece s Dockerom - odkomentirati backend-service u docker-compose.yml i u backend/api.py prebaciti varijablu "databasehost" u "postgres-service". Ako se pokrece bez dockera, treba na stroj instalirati sve python pakete iz backend/requirements.py i pokrenuti skriptu "runnodocker.py". Ovo je napravljeno jer se dogadja zastoj mreze kada se koristi docker, a api se koristi preko Chrome browsera - request traje preko 10 sekundi. Na Firefoxu se ovo ne dogadja, niti kada se ne koristi Docker za backend. Moguce da se radi o nekom problemu s exportom portova, ali oni su exportani po dokumentaciji. Problem se javlja bez obzira
 
 
 postgres:
