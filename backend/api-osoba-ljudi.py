@@ -1,9 +1,9 @@
 # Service koji vraca JSON
 
-from flask import Flask, request
+from flask import Flask, request, abort
 from flask_restplus import Api, Resource, fields
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 # Ovo treba jer je backend na drugom portu
 from flask_cors import CORS, cross_origin
@@ -35,7 +35,11 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-
+# Username i password
+model_login = api.model('Login podaci', {
+                          'username' : fields.String,
+                          'password' : fields.String
+                       })
 
 # Definicija modela
 model_osobe = api.model('Tip Osoba', { 
@@ -103,6 +107,42 @@ class Osoba(UserMixin, db.Model):
    updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.now())
    
    detalji = db.relationship('OsobaPlus', backref='glavni', lazy='dynamic')
+
+
+@login_manager.user_loader
+def load_user(user_id):
+   return Osoba.query.get(int(user_id))
+
+@api.route('/login')
+class Login(Resource):
+   # Vraca jednu osobu, i ulogirava
+   @api.expect(model_login)
+   def post(self):
+      username = api.payload['username']
+      password = api.payload['password']
+      user = Osoba.query.filter_by(username=username).first()
+
+      # Provjeri password i ulogiraj
+      if user.password == password:
+         login_user(user)
+         return "Ulogirao sam usera - " + username
+      else:
+         abort(400, "Pogresan password.")
+
+
+@api.route('/logout')
+class Logout(Resource):
+   # Vraca jednu osobu
+   def get(self):
+      logout_user()
+      return "Sada Ste izlogirani."
+
+@api.route('/provjeri-login')
+class ProvjeriLogin(Resource):
+   # Vraca jednu osobu
+   @login_required
+   def get(self):
+      return current_user.username
 
 
 # Pomocna funkcija za kopiranje polja iz inputa, bez passworda
