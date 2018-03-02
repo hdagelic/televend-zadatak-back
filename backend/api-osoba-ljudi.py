@@ -11,6 +11,7 @@ from flask_cors import CORS, cross_origin
 import os
 import sys
 import datetime
+import time
 
 # Za test
 import psycopg2
@@ -89,6 +90,9 @@ model_detalji_plus_id = api.inherit('Tip Osoba - detalji+id', model_detalji_plus
                         'id' : fields.Integer
                       })
 
+def date_now():
+   return datetime.datetime.now()
+
 # Definicija osobe - osnovni zapis
 # UserMixin se nasljedjuje zbog provjere logina (id mora postojati i zvati se "id")
 # Role: 1 - admin, 2 - manager, 3 - user
@@ -101,8 +105,8 @@ class Osoba(db.Model):
    password = db.Column(db.String(30), default='')
    email = db.Column(db.String(30), default='')
    role = db.Column(db.Integer, default=3)
-   created_at = db.Column(db.DateTime, default=datetime.datetime.now())
-   updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.now())
+   created_at = db.Column(db.DateTime, default=date_now())
+   updated_at = db.Column(db.DateTime, onupdate=date_now())
    
    detalji = db.relationship('OsobaPlus', backref='glavni', lazy='dynamic')
 
@@ -146,6 +150,7 @@ def OsobaCopy(stara_osoba, i):
    if i['password'] != '':
      stara_osoba.password=i['password']
    stara_osoba.role=i['role']
+   stara_osoba.updated_at = date_now()
 
 
 # Spol: 1 - muski, 2 - zenski
@@ -156,11 +161,11 @@ class OsobaPlus(db.Model):
    adresa = db.Column(db.String(64), default='')
    telefon = db.Column(db.String(30), default='')
    postcode = db.Column(db.String(10), default='')
-   datum_rodjenja = db.Column(db.DateTime, default=datetime.datetime.now())
+   datum_rodjenja = db.Column(db.DateTime, default=datetime.datetime.strptime('1981-1-1', '%Y-%m-%d'))
    slika = db.Column(db.String(255), default='')
    spol = db.Column(db.Integer, default=0)
-   created_at = db.Column(db.DateTime, default=datetime.datetime.now())
-   updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.now())
+   created_at = db.Column(db.DateTime, default=date_now())
+   updated_at = db.Column(db.DateTime, onupdate=date_now())
 
    # Foreign key treba bit lowercase
    glavni_id = db.Column(db.Integer, db.ForeignKey('osoba.id'))
@@ -178,6 +183,7 @@ def OsobaPlusCopy(det, i, id_osobe):
      pass
    det.spol=i['spol']
    det.glavni_id = id_osobe
+   det.updated_at = date_now()
 
 # Ovo je ruta za dohvacanje svih osoba (na GET)  ili za dodavanje nove (na POST)
 
@@ -206,7 +212,7 @@ class OsobaRoot(Resource):
    def post(self):
       #print(str(api.payload), file=sys.stderr)
       i =  api.payload
-      nova_osoba = Osoba(username=i['username'], ime=i['ime'], prezime=i['prezime'], email=i['email'], role=i['role'], password=i['password'])
+      nova_osoba = Osoba(username=i['username'], ime=i['ime'], prezime=i['prezime'], email=i['email'], role=i['role'], password=i['password'], created_at = date_now())
       db.session.add(nova_osoba)
       db.session.commit()
       return i
@@ -228,6 +234,7 @@ class OsobaId(Resource):
    def post(self, id):
       #print("post", file=sys.stderr)
       #print(str(api.payload), file=sys.stderr)
+
 
       # Ako je obicni user, i nije ulogiran - izadji
       if current_identity['role'] == 3 and id <> current_identity['id']:
@@ -273,6 +280,7 @@ class DetaljiOsobe(Resource):
    @api.expect(model_detalji)
    @jwt_required()
    def post(self, id):
+ 
       # Ako je obicni user, i nije ulogiran - izadji
       if current_identity['role'] == 3 and id <> current_identity['id']:
           abort(401)
